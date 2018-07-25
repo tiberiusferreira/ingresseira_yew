@@ -1,9 +1,9 @@
 #[macro_use] extern crate yew;
 #[macro_use] extern crate stdweb;
 mod ingresseira;
+mod svg_buttons;
 use yew::prelude::*;
 use ingresseira::Model;
-
 fn main() {
     yew::initialize();
     App::<Model>::new().mount_to_body();
