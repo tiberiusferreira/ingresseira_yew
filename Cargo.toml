@@ -1,0 +1,8 @@
+[package]
+name = "ingresseira_yew"
+version = "0.1.0"
+authors = ["Tiberio D A R Ferreira <tiberiusferreira@gmail.com>"]
+
+[dependencies]
+stdweb = "0.4.2"
+yew = { git = 'https://github.com/DenisKolodin/yew.git' }
