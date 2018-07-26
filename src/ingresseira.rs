@@ -2,104 +2,163 @@ extern crate stdweb;
 extern crate yew;
 
 use self::stdweb::web::*;
-
 use self::yew::prelude::*;
-use self::yew::virtual_dom::*;
-use self::yew::services::ConsoleService;
-use stdweb::unstable::TryFrom;
-use super::svg_buttons::*;
+
+use self::yew::services::console::ConsoleService;
+
+use super::icons::*;
+use yew_simple::{RouterTask, RouteInfo};
+
+use element_from_html_string::ElementFromHtmlString;
+pub struct Context {
+    pub console: ConsoleService,
+}
+
+
 pub struct Model {
-    console: ConsoleService,
     value: i64,
+    routes: Routes,
+    #[allow(dead_code)]
+    router: RouterTask<Context, Model>,
+}
+
+#[derive(PartialEq)]
+pub enum Routes{
+    Parties,
+    Tickets,
+    CreateNewEvent,
+    Settings
 }
 
 pub enum Msg {
     Increment,
     Decrement,
     Bulk(Vec<Msg>),
+    GoToParties,
+    GoToTickets,
+    GoToCreateNewEvent,
+    GoToSettings,
+    None,
 }
 
-impl Component for Model {
+fn handle_route(info: RouteInfo) -> Msg {
+    let route = info.url.fragment().unwrap_or("");
+    if route.to_ascii_lowercase() == "parties" {
+        Msg::GoToParties
+    } else if route.to_ascii_lowercase() == "tickets" {
+        Msg::GoToTickets
+    } else if route.to_ascii_lowercase() == "create_new_event" {
+        Msg::GoToCreateNewEvent
+    } else if route.to_ascii_lowercase() == "settings" {
+        Msg::GoToSettings
+    } else {
+        Msg::None
+    }
+}
+
+impl Component<Context> for Model {
     type Message = Msg;
     type Properties = ();
 
-    fn create(_: Self::Properties, _: ComponentLink<Self>) -> Self {
+    fn create(_: Self::Properties, context: &mut Env<Context, Self>) -> Self {
         Model {
-            console: ConsoleService::new(),
             value: 0,
+            routes: Routes::Parties,
+            router: RouterTask::new(context, &handle_route),
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, msg: Self::Message, context: &mut Env<Context, Self>) -> ShouldRender {
         match msg {
             Msg::Increment => {
                 self.value = self.value + 1;
-                self.console.log("plus one");
+                context.console.log("plus one");
+                return true;
             }
             Msg::Decrement => {
                 self.value = self.value - 1;
-                self.console.log("minus one");
+                context.console.log("minus one");
+                return true;
             }
             Msg::Bulk(list) => for msg in list {
-                self.update(msg);
-                self.console.log("Bulk action");
+                self.update(msg, context);
+                context.console.log("Bulk action");
             },
+            Msg::None => {
+                context.console.log("No action");
+                return false;
+            },
+            Msg::GoToParties => {
+                self.routes = Routes::Parties;
+                return true
+            },
+            Msg::GoToTickets => {
+                self.routes = Routes::Tickets;
+                return true
+            },
+            Msg::GoToCreateNewEvent => {
+                self.routes = Routes::CreateNewEvent;
+                return true
+            },
+            Msg::GoToSettings => {
+                self.routes = Routes::Settings;
+                return true
+            }
         }
-        true
+        return true;
     }
 }
 
 
-struct ElementFromHtmlString(String);
-impl<U> Renderable<U> for ElementFromHtmlString
-    where
-        U: Component
-{
-    fn view(&self) -> Html<U> {
-        let js_svg = js! {
-             var template = document.createElement("template");
-             template.innerHTML = @{self.0.to_string()};
-             return template.content.firstChild;
-        };
-        let node = Node::try_from(js_svg).expect("convert js_svg");
-        let vnode = VNode::VRef(node);
-        vnode
-    }
-}
-
-fn header() -> Html<Model>{
+fn header(route: &Routes) -> Html<Context, Model>{
+    let default_color = "black";
+    let active_color = "deepskyblue";
+    let parties_icon_color;
+    let tickets_icon_color;
+    let new_event_icon_color;
+    let settings_icon_color;
+    parties_icon_color = if route == &Routes::Parties {active_color} else {default_color};
+    tickets_icon_color = if route == &Routes::Tickets {active_color} else {default_color};
+    new_event_icon_color = if route == &Routes::CreateNewEvent {active_color} else {default_color};
+    settings_icon_color = if route == &Routes::Settings {active_color} else {default_color};
     html! {
         <header>
             <div class="main-nav-organizer",>
-                <a class="navlink",>
-                    {ElementFromHtmlString(setting_svg("main-nav-items", "black")).view()}
+                <a href="#parties", class="navlink",>
+                    {
+                        ElementFromHtmlString(parties_icon("main-nav-items", parties_icon_color)).view()
+                    }
                 </a>
-                <a class="navlink",>
-                    {ElementFromHtmlString(ticket_svg("main-nav-items", "black")).view()}
+                <a href="#tickets", class="navlink",>
+                    {
+                        ElementFromHtmlString(tickets_icon("main-nav-items", tickets_icon_color)).view()
+                    }
                 </a>
-                <a class="navlink",>
-                    {ElementFromHtmlString(edit_svg("main-nav-items", "black")).view()}
+                <a href="#create_new_event", class="navlink",>
+                    {
+                        ElementFromHtmlString(new_event_icon("main-nav-items", new_event_icon_color)).view()
+                    }
                 </a>
-                <a class="navlink",>
-                    {ElementFromHtmlString(cone_svg("main-nav-items", "black")).view()}
+                <a href="#settings", class="navlink",>
+                    {
+                        ElementFromHtmlString(setting_icon("main-nav-items", settings_icon_color)).view()
+                    }
                 </a>
             </div>
         </header>
     }
 }
 
-impl Renderable<Model> for Model {
-    fn view(&self) -> Html<Self> {
+impl Renderable<Context, Model> for Model {
+    fn view(&self) -> Html<Context, Self> {
         html! {
             <div>
-                {header()}
+                {header(&self.routes)}
                 <nav class="menu",>
-                    <button onclick=|_| Msg::Increment,>{ "Increment" }</button>
-                    <button onclick=|_| Msg::Decrement,>{ "Decrement" }</button>
-                    <button onclick=|_| Msg::Bulk(vec![Msg::Increment, Msg::Increment]),>{ "Increment Twice" }</button>
+//                    <button onclick=|_| Msg::Increment,>{ "Increment" }</button>
+//                    <button onclick=|_| Msg::Decrement,>{ "Decrement" }</button>
+//                    <button onclick=|_| Msg::Bulk(vec![Msg::Increment, Msg::Increment]),>{ "Increment Twice" }</button>
                 </nav>
-                <p>{ self.value }</p>
-                <p>{ Date::new().to_string() }</p>
             </div>
         }
     }

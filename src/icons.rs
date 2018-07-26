@@ -1,4 +1,4 @@
-pub fn setting_svg(class: &str, fill_color: &str) ->  String{
+pub fn setting_icon(class: &str, fill_color: &str) ->  String{
     format!(r#"<svg class="{}" width="100%" height="100%" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
     viewBox="0 0 478.703 478.703" style="enable-background:new 0 0 478.703 478.703;" xml:space="preserve">
         <g>
@@ -29,7 +29,7 @@ pub fn setting_svg(class: &str, fill_color: &str) ->  String{
         </svg>"#, class, fill_color, fill_color)
 }
 
-pub fn cone_svg(class: &str, fill_color: &str) ->  String{
+pub fn parties_icon(class: &str, fill_color: &str) ->  String{
     format!(r#"<svg class={} xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 512 512" aria-labelledby="title">
         <path fill={} d="M345.863,281.853c19.152-8.872,38.221-15.344,56.953-19.308c5.403-1.143,8.856-6.45,7.713-11.853
 				c-1.143-5.403-6.444-8.857-11.854-7.713c-21.683,4.588-43.704,12.261-65.728,22.865c-12.303-14.673-26.387-30.015-41.582-45.21
@@ -98,14 +98,14 @@ pub fn cone_svg(class: &str, fill_color: &str) ->  String{
             fill_color)
 }
 
-pub fn edit_svg(class: &str, fill_color: &str) ->  String{
+pub fn new_event_icon(class: &str, fill_color: &str) ->  String{
     format!(r#"<svg class={} xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 64 64" aria-labelledby="title">
         <path fill={} d="m62.463,1.543c-1.017-1.017-2.403-1.542-3.83-1.543-1.43,0.021-2.778,0.591-3.801,1.609l-2.446,2.443c-0.01,0.012-0.015,0.025-0.024,0.035l-31.909,31.819c-0.104,0.104-0.158,0.233-0.234,0.353-0.131,0.152-0.245,0.317-0.327,0.505l-3.254,7.5c-0.324,0.75-0.169,1.62 0.397,2.211 0.392,0.41 0.927,0.631 1.476,0.631 0.241,0 0.486-0.043 0.719-0.131l7.824-2.943c0.217-0.081 0.406-0.209 0.579-0.352 0.126-0.08 0.262-0.14 0.367-0.245l32.035-31.945c0.006-0.006 0.008-0.014 0.015-0.02l2.341-2.33c2.118-2.111 2.15-5.52 0.072-7.597zm-35.905,37.576l-1.777-1.773 29.151-29.069 1.776,1.773-29.15,29.069zm32.95-32.857l-.916,.912-1.784-1.779 .911-.91c0.265-0.264 0.609-0.411 0.972-0.416 0.344-0.008 0.653,0.119 0.883,0.348 0.491,0.49 0.459,1.319-0.066,1.845z"/>
         <path fill={} d="M58.454,22.253c-1.128,0-2.04,0.911-2.04,2.034v33.611c0,1.121-0.915,2.033-2.04,2.033H6.12    c-1.126,0-2.04-0.912-2.04-2.033V9.787c0-1.121,0.914-2.034,2.04-2.034h33.403c1.127,0,2.04-0.911,2.04-2.034    s-0.913-2.034-2.04-2.034H6.12C2.745,3.685,0,6.422,0,9.787v48.111C0,61.263,2.745,64,6.12,64h48.254    c3.374,0,6.12-2.737,6.12-6.102V24.287C60.494,23.164,59.581,22.253,58.454,22.253z"/>
     </svg>"#, class, fill_color, fill_color)
 }
 
-pub fn ticket_svg(class: &str, fill_color: &str) ->  String{
+pub fn tickets_icon(class: &str, fill_color: &str) ->  String{
     format!(r#"<svg class={} xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 460.298 460.297" aria-labelledby="title">
 <title id="title">Ticket Icon</title>
 <path fill={} d="M419.304,232.221c0.772,0.333,1.447,0.78,2.146,1.203l6.08-13.941
