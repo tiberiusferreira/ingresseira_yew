@@ -1,28 +1,22 @@
 extern crate stdweb;
 extern crate yew;
-
-use self::stdweb::web::*;
-use self::yew::prelude::*;
-
-use self::yew::services::console::ConsoleService;
-
-use super::icons::*;
+use yew::{prelude::*, services::console::ConsoleService};
 use yew_simple::{RouterTask, RouteInfo};
-
+use super::icons::*;
 use element_from_html_string::ElementFromHtmlString;
+use std::fmt;
+
 pub struct Context {
     pub console: ConsoleService,
 }
 
-
 pub struct Model {
-    value: i64,
     routes: Routes,
     #[allow(dead_code)]
     router: RouterTask<Context, Model>,
 }
 
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum Routes{
     Parties,
     Tickets,
@@ -30,10 +24,14 @@ pub enum Routes{
     Settings
 }
 
+impl fmt::Display for Routes {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+#[derive(Debug, PartialEq)]
 pub enum Msg {
-    Increment,
-    Decrement,
-    Bulk(Vec<Msg>),
     GoToParties,
     GoToTickets,
     GoToCreateNewEvent,
@@ -43,13 +41,13 @@ pub enum Msg {
 
 fn handle_route(info: RouteInfo) -> Msg {
     let route = info.url.fragment().unwrap_or("");
-    if route.to_ascii_lowercase() == "parties" {
+    if route == Routes::Parties.to_string() {
         Msg::GoToParties
-    } else if route.to_ascii_lowercase() == "tickets" {
+    } else if route == Routes::Tickets.to_string() {
         Msg::GoToTickets
-    } else if route.to_ascii_lowercase() == "create_new_event" {
+    } else if route == Routes::CreateNewEvent.to_string() {
         Msg::GoToCreateNewEvent
-    } else if route.to_ascii_lowercase() == "settings" {
+    } else if route == Routes::Settings.to_string() {
         Msg::GoToSettings
     } else {
         Msg::None
@@ -62,7 +60,6 @@ impl Component<Context> for Model {
 
     fn create(_: Self::Properties, context: &mut Env<Context, Self>) -> Self {
         Model {
-            value: 0,
             routes: Routes::Parties,
             router: RouterTask::new(context, &handle_route),
         }
@@ -70,20 +67,6 @@ impl Component<Context> for Model {
 
     fn update(&mut self, msg: Self::Message, context: &mut Env<Context, Self>) -> ShouldRender {
         match msg {
-            Msg::Increment => {
-                self.value = self.value + 1;
-                context.console.log("plus one");
-                return true;
-            }
-            Msg::Decrement => {
-                self.value = self.value - 1;
-                context.console.log("minus one");
-                return true;
-            }
-            Msg::Bulk(list) => for msg in list {
-                self.update(msg, context);
-                context.console.log("Bulk action");
-            },
             Msg::None => {
                 context.console.log("No action");
                 return false;
@@ -105,7 +88,6 @@ impl Component<Context> for Model {
                 return true
             }
         }
-        return true;
     }
 }
 
@@ -124,22 +106,22 @@ fn header(route: &Routes) -> Html<Context, Model>{
     html! {
         <header>
             <div class="main-nav-organizer",>
-                <a href="#parties", class="navlink",>
+                <a href={format!("#{}", Routes::Parties.to_string())}, class="navlink",>
                     {
                         ElementFromHtmlString(parties_icon("main-nav-items", parties_icon_color)).view()
                     }
                 </a>
-                <a href="#tickets", class="navlink",>
+                <a href={format!("#{}", Routes::Tickets.to_string())}, class="navlink",>
                     {
                         ElementFromHtmlString(tickets_icon("main-nav-items", tickets_icon_color)).view()
                     }
                 </a>
-                <a href="#create_new_event", class="navlink",>
+                <a href={format!("#{}", Routes::CreateNewEvent.to_string())}, class="navlink",>
                     {
                         ElementFromHtmlString(new_event_icon("main-nav-items", new_event_icon_color)).view()
                     }
                 </a>
-                <a href="#settings", class="navlink",>
+                <a href={format!("#{}", Routes::Settings.to_string())}, class="navlink",>
                     {
                         ElementFromHtmlString(setting_icon("main-nav-items", settings_icon_color)).view()
                     }
