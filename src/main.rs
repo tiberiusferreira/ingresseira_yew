@@ -3,8 +3,6 @@
 extern crate yew_simple;
 
 mod ingresseira;
-mod icons;
-mod element_from_html_string;
 use yew::prelude::*;
 use ingresseira::{Model, Context};
 use self::yew::services::console::ConsoleService;

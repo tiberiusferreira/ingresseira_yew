@@ -1,9 +1,15 @@
 extern crate stdweb;
 extern crate yew;
+mod element_from_html_string;
+mod header;
+mod icons;
+mod parties_list;
+use self::parties_list::PartiesList;
 use yew::{prelude::*, services::console::ConsoleService};
 use yew_simple::{RouterTask, RouteInfo};
-use super::icons::*;
-use element_from_html_string::ElementFromHtmlString;
+use self::icons::*;
+use self::header::*;
+use self::element_from_html_string::ElementFromHtmlString;
 use std::fmt;
 
 pub struct Context {
@@ -15,6 +21,23 @@ pub struct Model {
     #[allow(dead_code)]
     router: RouterTask<Context, Model>,
 }
+
+#[derive(Debug, PartialEq, Clone, Default)]
+pub struct Event {
+    date: String,
+    description: String,
+    id: u64,
+    image_url: String,
+    image_alt: String,
+    place: String,
+    price: f64,
+    sales_place: String,
+    title: String,
+    toggled: bool
+}
+
+
+
 
 #[derive(Debug, PartialEq)]
 pub enum Routes{
@@ -92,55 +115,24 @@ impl Component<Context> for Model {
 }
 
 
-fn header(route: &Routes) -> Html<Context, Model>{
-    let default_color = "black";
-    let active_color = "deepskyblue";
-    let parties_icon_color;
-    let tickets_icon_color;
-    let new_event_icon_color;
-    let settings_icon_color;
-    parties_icon_color = if route == &Routes::Parties {active_color} else {default_color};
-    tickets_icon_color = if route == &Routes::Tickets {active_color} else {default_color};
-    new_event_icon_color = if route == &Routes::CreateNewEvent {active_color} else {default_color};
-    settings_icon_color = if route == &Routes::Settings {active_color} else {default_color};
-    html! {
-        <header>
-            <div class="main-nav-organizer",>
-                <a href={format!("#{}", Routes::Parties.to_string())}, class="navlink",>
-                    {
-                        ElementFromHtmlString(parties_icon("main-nav-items", parties_icon_color)).view()
-                    }
-                </a>
-                <a href={format!("#{}", Routes::Tickets.to_string())}, class="navlink",>
-                    {
-                        ElementFromHtmlString(tickets_icon("main-nav-items", tickets_icon_color)).view()
-                    }
-                </a>
-                <a href={format!("#{}", Routes::CreateNewEvent.to_string())}, class="navlink",>
-                    {
-                        ElementFromHtmlString(new_event_icon("main-nav-items", new_event_icon_color)).view()
-                    }
-                </a>
-                <a href={format!("#{}", Routes::Settings.to_string())}, class="navlink",>
-                    {
-                        ElementFromHtmlString(setting_icon("main-nav-items", settings_icon_color)).view()
-                    }
-                </a>
-            </div>
-        </header>
-    }
-}
-
 impl Renderable<Context, Model> for Model {
     fn view(&self) -> Html<Context, Self> {
+        let event = Event{
+            date: String::new(),
+            description: String::new(),
+            id: 0,
+            image_url: String::new(),
+            image_alt: String::new(),
+            place: String::new(),
+            price: 0.0,
+            sales_place: String::new(),
+            title: String::new(),
+            toggled: false,
+        };
         html! {
             <div>
                 {header(&self.routes)}
-                <nav class="menu",>
-//                    <button onclick=|_| Msg::Increment,>{ "Increment" }</button>
-//                    <button onclick=|_| Msg::Decrement,>{ "Decrement" }</button>
-//                    <button onclick=|_| Msg::Bulk(vec![Msg::Increment, Msg::Increment]),>{ "Increment Twice" }</button>
-                </nav>
+                <PartiesList: event=event,/>
             </div>
         }
     }
