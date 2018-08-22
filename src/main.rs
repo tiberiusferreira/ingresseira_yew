@@ -1,20 +1,14 @@
 #[macro_use] extern crate yew;
 #[macro_use] extern crate stdweb;
-extern crate yew_simple;
-
+#[macro_use] extern crate serde_derive;
+extern crate serde;
 mod ingresseira;
-use yew::prelude::*;
-use ingresseira::{Model, Context};
-use self::yew::services::console::ConsoleService;
+use ingresseira::{RouterModel};
 
 fn main() {
     yew::initialize();
 
-    let context = Context {
-        console: ConsoleService::new(),
-    };
+    yew::app::App::<RouterModel>::new().mount_to_body();
 
-    let app: App<_, Model> = App::new(context);
-    app.mount_to_body();
     yew::run_loop();
 }

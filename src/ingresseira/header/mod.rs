@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn header(route: &Routes) -> Html<Context, Model>{
+pub fn header(route: &Routes) -> Html<RouterModel>{
     let default_color = "black";
     let active_color = "deepskyblue";
     let parties_icon_color;
@@ -11,27 +11,29 @@ pub fn header(route: &Routes) -> Html<Context, Model>{
     tickets_icon_color = if route == &Routes::Tickets {active_color} else {default_color};
     new_event_icon_color = if route == &Routes::CreateNewEvent {active_color} else {default_color};
     settings_icon_color = if route == &Routes::Settings {active_color} else {default_color};
+    let svg_class = "main-nav-items";
+    let button_container = "navlink";
     html! {
         <header>
             <div class="main-nav-organizer",>
-                <a href={format!("#{}", Routes::Parties.to_string())}, class="navlink",>
+                <a href={format!("#{}", Routes::Parties.to_string())}, class={button_container},>
                     {
-                        ElementFromHtmlString(parties_icon("main-nav-items", parties_icon_color)).view()
+                        ElementFromHtmlString(parties_icon({svg_class}, parties_icon_color)).view()
                     }
                 </a>
-                <a href={format!("#{}", Routes::Tickets.to_string())}, class="navlink",>
+                <a href={format!("#{}", Routes::Tickets.to_string())}, class={button_container},>
                     {
-                        ElementFromHtmlString(tickets_icon("main-nav-items", tickets_icon_color)).view()
+                        ElementFromHtmlString(tickets_icon({svg_class}, tickets_icon_color)).view()
                     }
                 </a>
-                <a href={format!("#{}", Routes::CreateNewEvent.to_string())}, class="navlink",>
+                <a href={format!("#{}", Routes::CreateNewEvent.to_string())}, class={button_container},>
                     {
-                        ElementFromHtmlString(new_event_icon("main-nav-items", new_event_icon_color)).view()
+                        ElementFromHtmlString(new_event_icon({svg_class}, new_event_icon_color)).view()
                     }
                 </a>
-                <a href={format!("#{}", Routes::Settings.to_string())}, class="navlink",>
+                <a href={format!("#{}", Routes::Settings.to_string())}, class={button_container},>
                     {
-                        ElementFromHtmlString(setting_icon("main-nav-items", settings_icon_color)).view()
+                        ElementFromHtmlString(setting_icon({svg_class}, settings_icon_color)).view()
                     }
                 </a>
             </div>
