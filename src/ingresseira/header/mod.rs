@@ -16,22 +16,22 @@ pub fn header(route: &Routes) -> Html<RouterModel>{
     html! {
         <header>
             <div class="main-nav-organizer",>
-                <a href={format!("#{}", Routes::Parties.to_string())}, class={button_container},>
+                <a onclick=|_| Msg::GoToParties, class={button_container},>
                     {
                         ElementFromHtmlString(parties_icon({svg_class}, parties_icon_color)).view()
                     }
                 </a>
-                <a href={format!("#{}", Routes::Tickets.to_string())}, class={button_container},>
+                <a onclick=|_| Msg::GoToTickets, class={button_container},>
                     {
                         ElementFromHtmlString(tickets_icon({svg_class}, tickets_icon_color)).view()
                     }
                 </a>
-                <a href={format!("#{}", Routes::CreateNewEvent.to_string())}, class={button_container},>
+                <a onclick=|_| Msg::GoToCreateNewEvent, class={button_container},>
                     {
                         ElementFromHtmlString(new_event_icon({svg_class}, new_event_icon_color)).view()
                     }
                 </a>
-                <a href={format!("#{}", Routes::Settings.to_string())}, class={button_container},>
+                <a onclick=|_| Msg::GoToSettings, class={button_container},>
                     {
                         ElementFromHtmlString(setting_icon({svg_class}, settings_icon_color)).view()
                     }
