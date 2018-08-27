@@ -4,8 +4,10 @@ extern crate serde_json;
 mod element_from_html_string;
 mod header;
 mod icons;
+mod common_objs;
 mod parties_list;
 mod services;
+use self::common_objs::*;
 use std::str::FromStr;
 use std::string::ToString;
 use self::parties_list::PartiesList;
@@ -15,36 +17,17 @@ use self::header::*;
 use self::element_from_html_string::ElementFromHtmlString;
 use yew::format::Nothing;
 use ingresseira::services::router::*;
+use ingresseira::services::context_provider::*;
 use ingresseira::services::router::Request as RouterRequest;
 
 pub struct RouterModel {
     routes: Routes,
     #[allow(unused)]
     fetch_task: fetch::FetchTask,
-    router: Box<Bridge<Router<()>>>
+    router: Box<Bridge<Router<()>>>,
+    context_provider_link: Box<Bridge<ContextProvider>>,
 }
 
-#[derive(Display, EnumString, Debug, PartialEq)]
-pub enum Routes{
-    Parties,
-    Tickets,
-    CreateNewEvent,
-    Settings
-}
-
-
-#[derive(Debug, PartialEq, Clone, Default, Serialize, Deserialize)]
-pub struct Event {
-    date: String,
-    description: String,
-    id: u64,
-    image_url: String,
-    image_alt: String,
-    place: String,
-    price: f64,
-    sales_place: String,
-    title: String,
-}
 
 pub enum Msg {
     GoToParties,
@@ -52,7 +35,8 @@ pub enum Msg {
     GoToCreateNewEvent,
     GoToSettings,
     Fetch(fetch::Response<Text>),
-    HandleRoute(Route<()>)
+    HandleRoute(Route<()>),
+    HandleContextChange(Context)
 }
 
 
@@ -60,7 +44,7 @@ impl Component for RouterModel {
     type Message = Msg;
     type Properties = ();
 
-    fn create(_: Self::Properties,  link: ComponentLink<Self>) -> Self {
+    fn create(_: Self::Properties,  mut link: ComponentLink<Self>) -> Self {
         let request = fetch::Request::get("http://localhost:1024/api/events")
             .body(Nothing)
             .expect("Could not create body");
@@ -69,12 +53,16 @@ impl Component for RouterModel {
         let callback = link.send_back(|route: Route<()>| Msg::HandleRoute(route));
         let mut router = Router::bridge(callback);
 
+        let cxt_callback = link.send_back(|ctx: Context| Msg::HandleContextChange(ctx));
+        let context_provider_link = ContextProvider::bridge(cxt_callback);
+
         router.send(RouterRequest::GetCurrentRoute);
 
         RouterModel {
             routes: Routes::Parties,
             fetch_task: task,
-            router
+            router,
+            context_provider_link
         }
     }
 
@@ -124,6 +112,7 @@ impl Component for RouterModel {
                         match serde_json::from_str::<Vec<Event>>(actual_body){
                             Ok(events) => {
                                 console!(log, format!("Parsed to events: {:?}", events));
+                                self.context_provider_link.send(ContextRequest::EventsUpdate(events));
                             },
                             Err(e) => {
                                 console!(log, format!("Error parsing to events: {:?}", e));
@@ -149,6 +138,10 @@ impl Component for RouterModel {
                 }else{
                     false
                 }
+            },
+            Msg::HandleContextChange(cxt) => {
+                console!(log, format!("New context!"));
+                false
             }
         }
     }
@@ -157,22 +150,10 @@ impl Component for RouterModel {
 
 impl RouterModel{
     fn get_view_for_route(&self) -> Html<RouterModel>{
-        let event = Event{
-            date: "23/12".to_string(),
-            description: "dadw".to_string(),
-            id: 0,
-            image_url: "https://s3-us-west-2.amazonaws.com/pixel-solutions/event/banner/e2b5aa26eafeeee141566a642e634526.jpg".to_string(),
-            image_alt: "Img Alt".to_string(),
-            place: "Gringos House".to_string(),
-            price: 20.0,
-            sales_place: "Casa da Tia Rita".to_string(),
-            title: "Evento Topzera".to_string(),
-        };
-
         match self.routes{
             Routes::Parties => {
                 html!{
-                    <PartiesList: event=event,/>
+                    <PartiesList: />
                 }
             },
             Routes::Tickets => {html!{<span>{"Tickets"}<span/>}},
